@@ -1,55 +1,43 @@
-import time
-from threading import Thread
+import math
 
-from inputs import get_gamepad
-
-LEFT_THRESHOLD = -3000
-RIGHT_THRESHOLD = 3000
-LEFT_MAX = -32768
-RIGHT_MAX = 32767
-X_INPUT_CODE = 'ABS_RX'
-Y_INPUT_CODE = 'ABS_RY'
-X_CHANNEL = 1
-Y_CHANNEL = 2
+import pygame
 
 SENDING_PERIOD_SEC = 0.1
+JOYSTICK_THRESHOLD = 0.1
+HORIZONTAL_SPEED_MAX = 50  # mm / s
+VERTICAL_SPEED_MAX = 1  # mm / s
+DELAY = 20
 
 
-def position_to_percents(value):
-    if LEFT_THRESHOLD < value < RIGHT_THRESHOLD:
+def axis_to_delta(axis, max_speed):
+    if abs(axis) <= JOYSTICK_THRESHOLD:
         return 0
-    if value < 0:
-        return - value * 100 / LEFT_MAX
-    return value * 100 / RIGHT_MAX
+    normalized_axis = (abs(axis) - JOYSTICK_THRESHOLD) / (1 - JOYSTICK_THRESHOLD)
+    unsigned_delta = normalized_axis * max_speed * DELAY / 1000
+    signed_delta = math.copysign(unsigned_delta, axis)
+    return signed_delta
 
 
 class GamepadInput:
-    # current_x_value = 0
-    # driver_x_value = 0
-    # current_y_value = 0
-    # driver_y_value = 0
-    shoulder_angle = 0
-    elbow_angle = 0
-    wrist_angle = 0
+    x = 0
+    y = 90
+    z = 0
 
     def __init__(self, target):
+        pygame.init()
+        self.j = pygame.joystick.Joystick(0)
         self.target = target
 
     def events_handling_loop(self):
         while 1:
-            events = get_gamepad()
-            for event in events:
-                if event.code == X_INPUT_CODE:
-                    self.shoulder_angle = position_to_percents(event.state)
-                elif event.code == Y_INPUT_CODE:
-                    self.elbow_angle = position_to_percents(event.state)
-            print(f'{self.shoulder_angle}\t\t{self.elbow_angle}\t\t{self.wrist_angle}')
-
-    def rest_client_loop(self):
-        while 1:
-            time.sleep(SENDING_PERIOD_SEC)
-            # self.target.apply(self.shoulder_angle, self.elbow_angle, self.wrist_angle)
+            pygame.event.pump()
+            self.x += axis_to_delta(self.j.get_axis(2), HORIZONTAL_SPEED_MAX)
+            self.y -= axis_to_delta(self.j.get_axis(3), HORIZONTAL_SPEED_MAX)
+            self.z -= axis_to_delta(self.j.get_axis(1), VERTICAL_SPEED_MAX)
+            self.z = min(1, self.z)
+            self.z = max(0, self.z)
+            self.target.apply(self.x, self.y, self.z)
+            self.target.wait(DELAY)
 
     def startup(self):
-        Thread(target=self.events_handling_loop).start()
-        Thread(target=self.rest_client_loop()).start()
+        self.events_handling_loop()

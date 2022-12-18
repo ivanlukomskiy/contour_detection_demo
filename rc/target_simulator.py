@@ -81,7 +81,9 @@ class SimTarget:
         draw_sheet(img)
         if self.contours:
             draw_contours(img, self.contours)
-        draw_arm(img, shoulder_angle, elbow_angle, (0, int(255 * z), int(255 * (1 - z))))
+        color = (0, int(255 * z), int(255 * (1 - z)))
+        print(f'{z} -> {color}')
+        draw_arm(img, shoulder_angle, elbow_angle, color)
 
         cv2.imshow('image', img)
 
