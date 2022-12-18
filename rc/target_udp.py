@@ -2,8 +2,6 @@ import socket
 import struct
 import time
 
-import cv2
-
 from constants import MAX_WRIST_ANGLE, MIN_WRIST_ANGLE
 from rc.geometry import sheet_coords_to_angles
 
@@ -25,6 +23,3 @@ class RcTarget:
 
     def wait(self, milliseconds):
         time.sleep(milliseconds / 1000)
-
-    def stop(self):
-        cv2.destroyAllWindows()

@@ -79,7 +79,8 @@ class SimTarget:
 
         shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y)
         draw_sheet(img)
-        draw_contours(img, self.contours)
+        if self.contours:
+            draw_contours(img, self.contours)
         draw_arm(img, shoulder_angle, elbow_angle, (0, int(255 * z), int(255 * (1 - z))))
 
         cv2.imshow('image', img)
