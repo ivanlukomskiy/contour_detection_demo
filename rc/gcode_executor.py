@@ -1,5 +1,4 @@
 import math
-import time
 from collections import Generator
 
 from gcodeparser import GcodeLine
@@ -13,11 +12,10 @@ POINTS_PER_SECOND = 10
 def move_straight(x0, x1, y0, y1, z0, z1, speed):
     length = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
     steps = max(1, int(length * POINTS_PER_SECOND / speed * 60))
-    # import ipdb; ipdb.set_trace()
     for i in range(steps):
-        x = (x1 - x0) * i / steps + x0
-        y = (y1 - y0) * i / steps + y0
-        z = (z1 - z0) * i / steps + z0
+        x = (x1 - x0) * (i + 1) / steps + x0
+        y = (y1 - y0) * (i + 1) / steps + y0
+        z = (z1 - z0) * (i + 1) / steps + z0
         yield x, y, z
 
 
