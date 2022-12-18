@@ -18,9 +18,9 @@ FOREARM_LENGTH = 220
 MIN_DISTANCE = 80
 
 # movement
-TRAVEL_SPEED = 10  # mm / sec
-DRAW_SPEED = 5  # mm / sec
-Z_SPEED = 0.5  # drop / sec
+TRAVEL_SPEED = 10 * 60  # mm / min
+DRAW_SPEED = 5 * 60  # mm / min
+Z_SPEED = 0.5 * 60  # period / min
 HOME_X = SHEET_WIDTH / 2
 HOME_Y = SHEET_HEIGHT / 2
 Z_UP = 1

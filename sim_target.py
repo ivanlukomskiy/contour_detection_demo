@@ -1,16 +1,12 @@
 import math
-import time
 
 import cv2
 import numpy as np
 
 from constants import VIEW_WIDTH, VIEW_HEIGHT, VIEW_SCALE, UPPER_ARM_LENGTH, ARM_THICKNESS, \
     FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, MIN_DISTANCE, \
-    CONTOUR_COLOR, CONTOUR_THICKNESS, HOME_X, Z_UP, HOME_Y
-from gcode_generator import to_gcode, POINTS_PER_SECOND, TRAVEL, DRAW, WAIT
-from simple_contours_loader import read_contours
+    CONTOUR_COLOR, CONTOUR_THICKNESS
 
-# util constants
 X0 = int(VIEW_WIDTH / 2)
 Y0 = int(VIEW_HEIGHT / 6)
 
@@ -100,36 +96,22 @@ def sheet_coords_to_angles(x, y):
     return a, b
 
 
-if __name__ == '__main__':
-    contours = read_contours('gamepad.jpeg')
-    gcode = to_gcode(contours)
-    i = 0
-    x = HOME_X
-    y = HOME_Y
-    z = Z_UP
+class SimTarget:
+    def __init__(self, contours):
+        self.contours = contours
 
-    while True:
+    def apply(self, x, y, z):
         img = np.zeros((VIEW_HEIGHT, VIEW_WIDTH, 3), np.uint8)
 
-        instruction = gcode[i]
-        if instruction[0] == TRAVEL or instruction[0] == DRAW:
-            x = instruction[1]
-            y = instruction[2]
-            z = instruction[3]
-
         shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y)
-        # x y ok
         draw_sheet(img)
-        draw_contours(img, contours)
+        draw_contours(img, self.contours)
         draw_arm(img, shoulder_angle, elbow_angle, (0, int(255 * z), int(255 * (1 - z))))
+
         cv2.imshow('image', img)
-        if cv2.waitKey(int(100 / POINTS_PER_SECOND)) & 0xFF == ord('q'):
-            break
 
-        if instruction[0] == WAIT:
-            time.sleep(instruction[1] / 1000)
+    def wait(self, milliseconds):
+        cv2.waitKey(int(milliseconds))
 
-        i += 1
-        i = i % len(gcode)
-
-    cv2.destroyAllWindows()
+    def stop(self):
+        cv2.destroyAllWindows()
