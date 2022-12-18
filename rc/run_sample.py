@@ -4,7 +4,7 @@ from sim_target import SimTarget
 from simple_contours_loader import read_contours
 
 if __name__ == '__main__':
-    contours = read_contours('gamepad.jpeg')
+    contours = read_contours('rc/gamepad.jpeg')
     gcode = to_gcode(contours)
 
     executor = Executor(SimTarget(contours), play_speed=8)

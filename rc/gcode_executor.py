@@ -36,7 +36,7 @@ class Executor:
                 self.target.apply(self.x, self.y, Z_UP)
                 self.target.wait(int(500 / self.play_speed))
                 self.target.apply(HOME_X, HOME_Y, Z_UP)
-                self.target.wait(int(1000 / self.play_speed))
+                self.target.wait(int(100000 / self.play_speed))
                 self.x = HOME_X
                 self.y = HOME_Y
                 self.z = Z_UP
