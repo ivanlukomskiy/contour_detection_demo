@@ -23,7 +23,8 @@ class GamepadInput:
     y = 90
     z = 0
 
-    def __init__(self, target):
+    def __init__(self, target, simulator):
+        self.simulator = simulator
         pygame.init()
         self.j = pygame.joystick.Joystick(0)
         self.target = target
@@ -36,8 +37,9 @@ class GamepadInput:
             self.z -= axis_to_delta(self.j.get_axis(1), VERTICAL_SPEED_MAX)
             self.z = min(1, self.z)
             self.z = max(0, self.z)
+            self.simulator.apply(self.x, self.y, self.z)
             self.target.apply(self.x, self.y, self.z)
-            self.target.wait(DELAY)
+            self.simulator.wait(DELAY)
 
     def startup(self):
         self.events_handling_loop()

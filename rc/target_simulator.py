@@ -10,6 +10,7 @@ from rc.geometry import sheet_coords_to_angles
 
 X0 = int(VIEW_WIDTH / 2)
 Y0 = int(VIEW_HEIGHT / 6)
+font = cv2.FONT_HERSHEY_SIMPLEX
 
 
 def line(image, x0, y0, x1, y1, thickness=3, color=None):
@@ -70,6 +71,14 @@ def draw_contours(img, contours):
         draw_contour(img, contour)
 
 
+def add_text(img, x, y, z, shoulder_angle, elbow_angle):
+    cv2.putText(img, f'X: {x:.1f}', (10, VIEW_HEIGHT - 120), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, f'Y: {y:.1f}', (10, VIEW_HEIGHT - 80), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, f'Z: {z:.2f}', (10, VIEW_HEIGHT - 40), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, f'Sh: {shoulder_angle:.1f}', (180, VIEW_HEIGHT - 80), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(img, f'El: {elbow_angle:.1f}', (180, VIEW_HEIGHT - 40), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+
 class SimTarget:
     def __init__(self, contours):
         self.contours = contours
@@ -82,10 +91,9 @@ class SimTarget:
         if self.contours:
             draw_contours(img, self.contours)
         color = (0, int(255 * z), int(255 * (1 - z)))
-        print(f'{z} -> {color}')
         draw_arm(img, shoulder_angle, elbow_angle, color)
-
-        cv2.imshow('image', img)
+        add_text(img, x, y, z, shoulder_angle, elbow_angle)
+        cv2.imshow('simulation', img)
 
     def wait(self, milliseconds):
         cv2.waitKey(int(milliseconds))

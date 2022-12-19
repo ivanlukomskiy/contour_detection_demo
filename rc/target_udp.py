@@ -10,8 +10,7 @@ SERVER_PORT = 5005
 
 
 class RcTarget:
-    def __init__(self, contours):
-        self.contours = contours
+    def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def apply(self, x, y, z):
