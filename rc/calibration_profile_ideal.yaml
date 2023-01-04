@@ -1,0 +1,9 @@
+upper_arm_length: 124
+upper_arm_angle_offset: 0
+upper_arm_angle_multiplier: 1
+
+forearm_length: 160
+forearm_arm_angle_offset: 0
+forearm_arm_angle_multiplier: 1
+
+sheet_distance: 100

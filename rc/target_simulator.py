@@ -6,6 +6,7 @@ import numpy as np
 from constants import VIEW_WIDTH, VIEW_HEIGHT, VIEW_SCALE, UPPER_ARM_LENGTH, ARM_THICKNESS, \
     FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, MIN_DISTANCE, \
     CONTOUR_COLOR, CONTOUR_THICKNESS
+from rc.calibration import load_profile
 from rc.geometry import sheet_coords_to_angles
 
 X0 = int(VIEW_WIDTH / 2)
@@ -78,6 +79,7 @@ def add_text(img, x, y, z, shoulder_angle, elbow_angle):
     cv2.putText(img, f'Sh: {shoulder_angle:.1f}', (180, VIEW_HEIGHT - 80), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
     cv2.putText(img, f'El: {elbow_angle:.1f}', (180, VIEW_HEIGHT - 40), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
+ideal_calibration = load_profile('ideal')
 
 class SimTarget:
     def __init__(self, contours):
@@ -86,7 +88,7 @@ class SimTarget:
     def apply(self, x, y, z):
         img = np.zeros((VIEW_HEIGHT, VIEW_WIDTH, 3), np.uint8)
 
-        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y)
+        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y, ideal_calibration)
         draw_sheet(img)
         if self.contours:
             draw_contours(img, self.contours)
