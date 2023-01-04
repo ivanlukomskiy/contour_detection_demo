@@ -1,16 +1,23 @@
 import numpy as np
 
 from rc.calibration import load_profile, save_calibration_points
+from rc.constants import SHEET_WIDTH, SHEET_HEIGHT
 from rc.geometry import sheet_coords_to_angles
+
+X_OFFSET = 50
+Y_OFFSET = 50
 
 
 def generate():
-    x_grid, y_grid = np.mgrid[0:250 + 1:250 / 3, 0:135 + 1:135 / 3]
+    x_grid, y_grid = np.mgrid[
+                         X_OFFSET:SHEET_WIDTH - X_OFFSET + 1:(SHEET_WIDTH - 2 * X_OFFSET) / 3,
+                         Y_OFFSET:SHEET_HEIGHT - Y_OFFSET + 1:(SHEET_HEIGHT - 2 * Y_OFFSET) / 3,
+                     ]
     x, y = np.vstack([x_grid.ravel(), y_grid.ravel()])
     ideal_profile = load_profile('ideal')
 
     def to_angles(_x, _y):
-        return sheet_coords_to_angles(_x, _y, ideal_profile)
+        return sheet_coords_to_angles(_x, _y, ideal_profile, safe=False)
 
     f = np.vectorize(to_angles, otypes=(float, float))
 
