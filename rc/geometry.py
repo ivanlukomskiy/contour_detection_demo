@@ -30,10 +30,12 @@ def sheet_coords_to_angles(x, y, profile, safe=True):
 
     a = math.degrees(a1 + a2)
 
-    return a, b
+    return a + profile['upper_arm_angle_offset'], b
 
 
 def angles_to_coords(a, b, profile):
+    a = a - profile['upper_arm_angle_offset']
+    b = b - profile['forearm_arm_angle_offset']
     t = math.radians(180 - a - b)
     a = math.radians(a)
     x = profile['upper_arm_length'] * math.sin(a) - profile['forearm_length'] * math.sin(t)
