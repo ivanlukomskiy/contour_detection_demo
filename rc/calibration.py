@@ -57,7 +57,6 @@ if __name__ == '__main__':
 
 
     def _diff_function(params_vector):
-        # print(f"> {params_vector}")
         _profile = {}
         for i, param in enumerate(params):
             _profile[param] = params_vector[i]
