@@ -5,10 +5,8 @@ from rc.geometry import sheet_coords_to_angles, angles_to_coords
 test_profile = {
     'upper_arm_length': 124,
     'upper_arm_angle_offset': -10,
-    'upper_arm_angle_multiplier': 1.1,
     'forearm_length': 160,
     'forearm_arm_angle_offset': 10,
-    'forearm_arm_angle_multiplier': 0.1,
     'sheet_distance': 100,
 }
 

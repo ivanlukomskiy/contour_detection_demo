@@ -37,15 +37,12 @@ def diff_function(calibration_points, profile):
 
 LINEAR_WEIGHT = 8
 ANGLE_WEIGHT = 0.8
-ANGLE_MULTIPLIER_WEIGHT = 1
 
 PARAM_WEIGHTS = {
     'upper_arm_length': LINEAR_WEIGHT,
     'upper_arm_angle_offset': ANGLE_WEIGHT,
-    'upper_arm_angle_multiplier': ANGLE_MULTIPLIER_WEIGHT,
     'forearm_length': LINEAR_WEIGHT,
     'forearm_arm_angle_offset': ANGLE_WEIGHT,
-    'forearm_arm_angle_multiplier': ANGLE_MULTIPLIER_WEIGHT,
     'sheet_distance': LINEAR_WEIGHT,
 }
 
@@ -80,7 +77,7 @@ if __name__ == '__main__':
 
     print(f"initial vector: {_diff_function(vector)}")
 
-    for i in range(200):
+    for i in range(500):
         grad = gradient_function(vector)
         print(f"=== iteration {i} ===")
         print(f"gradient is {grad}")

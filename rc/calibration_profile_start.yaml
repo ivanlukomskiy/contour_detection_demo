@@ -1,9 +1,5 @@
 upper_arm_length: 300
 upper_arm_angle_offset: 50
-upper_arm_angle_multiplier: 0.9
-
 forearm_length: 300
 forearm_arm_angle_offset: -10
-forearm_arm_angle_multiplier: 1.1
-
 sheet_distance: 40
