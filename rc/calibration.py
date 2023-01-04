@@ -14,6 +14,7 @@ def load_profile(name):
 
 def save_profile(name, profile):
     with open(f"calibration_profile_{name}.yaml", "w") as file:
+        profile = {k: float(v) for k, v in profile.items()}
         yaml.dump(profile, file)
 
 
@@ -46,26 +47,20 @@ PARAM_WEIGHTS = {
     'sheet_distance': LINEAR_WEIGHT,
 }
 
-if __name__ == '__main__':
-    ideal = load_profile('ideal')
-    profile = load_profile('start')
+
+def calculate_calibrations(approximation, iterations, output_calibration_name=None):
+    profile = load_profile(approximation)
     calibration_points = load_calibration_points('ideal')
     params = list(profile.keys())
 
-
-    def _diff_function(params_vector):
+    def _to_profile(params_vector):
         _profile = {}
         for i, param in enumerate(params):
             _profile[param] = params_vector[i]
-        return diff_function(calibration_points, _profile)
+        return _profile
 
-
-    def get_params(vector):
-        res = {}
-        for i, param in enumerate(params):
-            res[param] = vector[i]
-        return res
-
+    def _diff_function(params_vector):
+        return diff_function(calibration_points, _to_profile(params_vector))
 
     vector = []
     for param in params:
@@ -73,11 +68,11 @@ if __name__ == '__main__':
 
     gradient_function = nd.Gradient(_diff_function)
 
-    diff = _diff_function(vector)
-
     print(f"initial vector: {_diff_function(vector)}")
 
-    for i in range(500):
+    diff = 0
+
+    for i in range(iterations):
         grad = gradient_function(vector)
         print(f"=== iteration {i} ===")
         print(f"gradient is {grad}")
@@ -94,6 +89,19 @@ if __name__ == '__main__':
         print(f"force is {force}")
         change = - force * grad / norm
         for param_index, param in enumerate(params):
-            print(f"    {param:>30} {float(vector[param_index]):.2f} , delta {float(change[param_index]):.2f}" +
-                  f" , ideal {ideal[param] - vector[param_index]}")
+            print(f"    {param:>30} {float(vector[param_index]):.2f} , delta {float(change[param_index]):.2f}")
         vector += change
+
+    tolerance = math.sqrt(diff)
+
+    if output_calibration_name:
+        profile = _to_profile(vector)
+        profile['tolerance'] = tolerance
+        save_profile(output_calibration_name, profile)
+
+    return tolerance
+
+
+if __name__ == '__main__':
+    tolerance = calculate_calibrations('start', 500, 'out')
+    print(f"calibration done, tolerance {tolerance}")
