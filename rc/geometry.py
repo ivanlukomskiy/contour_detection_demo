@@ -29,7 +29,6 @@ def sheet_coords_to_angles(x, y, profile, safe=True):
     a1 = math.acos(a1_cos)
 
     a = math.degrees(a1 + a2)
-
     return a + profile['upper_arm_angle_offset'], b + profile['forearm_arm_angle_offset']
 
 

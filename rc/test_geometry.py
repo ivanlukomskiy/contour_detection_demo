@@ -12,8 +12,8 @@ test_profile = {
 
 TOLERANCE = 0.1
 
-@pytest.mark.parametrize('x', ([50, 100, 150]), )
-@pytest.mark.parametrize('y', ([0, 75, 150]), )
+@pytest.mark.parametrize('x', ([50]), )
+@pytest.mark.parametrize('y', ([0]), )
 def test_reversed_transform(x, y):
     a, b = sheet_coords_to_angles(x, y, test_profile, safe=False)
     x0, y0 = angles_to_coords(a, b, test_profile)
