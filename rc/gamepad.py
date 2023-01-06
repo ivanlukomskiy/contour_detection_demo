@@ -1,6 +1,10 @@
 import math
+from datetime import datetime
 
 import pygame
+
+from rc.geometry import sheet_coords_to_angles
+from rc.yaml_io import save_calibration_points
 
 SENDING_PERIOD_SEC = 0.1
 JOYSTICK_THRESHOLD = 0.1
@@ -22,8 +26,10 @@ class GamepadInput:
     x = 0
     y = 90
     z = 0
+    calibration_points = []
 
-    def __init__(self, target, simulator):
+    def __init__(self, target, simulator, profile):
+        self.profile = profile
         self.simulator = simulator
         pygame.init()
         self.j = pygame.joystick.Joystick(0)
@@ -32,6 +38,33 @@ class GamepadInput:
     def events_handling_loop(self):
         while 1:
             pygame.event.pump()
+            events = pygame.event.get(eventtype=pygame.JOYBUTTONUP)
+            for event in events:
+                if event.button == 0:  # B
+                    a, b = sheet_coords_to_angles(self.x, self.y, self.profile)
+                    print(f"Saving calibration point, a={a} deg, b={b} deg")
+                    try:
+                        print(f"x:")
+                        x = float(input())
+                        print(f"y:")
+                        y = float(input())
+                        point = {'x': x, 'y': y, 'a': a, 'b': b}
+                        self.calibration_points.append(point)
+                        print(f'Calibration point saved {point}')
+                    except:
+                        print("Invalid input")
+                if event.button == 1:
+                    if not self.calibration_points:
+                        print("No points to save\n")
+                        continue
+                    name = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+                    save_calibration_points(name, {'points': self.calibration_points})
+                    self.calibration_points.clear()
+                    print(f"Calibration points saved to file {name}")
+                if event.button == 2:
+                    print("Exit")
+                    return
+
             self.x += axis_to_delta(self.j.get_axis(2), HORIZONTAL_SPEED_MAX)
             self.y -= axis_to_delta(self.j.get_axis(3), HORIZONTAL_SPEED_MAX)
             self.z -= axis_to_delta(self.j.get_axis(1), VERTICAL_SPEED_MAX)

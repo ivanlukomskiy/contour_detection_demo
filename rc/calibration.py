@@ -6,9 +6,9 @@ import yaml
 
 from rc.gamepad import GamepadInput
 from rc.geometry import angles_to_coords
-from rc.profiles import load_profile, load_calibration_points, save_profile
 from rc.target_simulator import SimTarget
 from rc.target_udp import RcTarget
+from rc.yaml_io import load_profile, save_profile, load_calibration_points
 
 
 def diff_function(calibration_points, profile):
@@ -31,13 +31,14 @@ def get_weights(linear_weight, angle_weight):
 DEFAULT_WEIGHTS = get_weights(8, 0.8)
 
 
-def calculate_calibrations(approximation, iterations, output_calibration_name=None, weights=None,
+def calculate_calibrations(approximation, measurements, iterations, output_calibration_name=None, weights=None,
                            speed_factor=0.01, max_speed=3., speed_power=.6):
     if weights is None:
         weights = DEFAULT_WEIGHTS
 
     profile = load_profile(approximation)
-    calibration_points = load_calibration_points('ideal')
+    points = load_calibration_points(measurements)
+
     params = list(profile.keys())
 
     def _to_profile(params_vector):
@@ -47,7 +48,7 @@ def calculate_calibrations(approximation, iterations, output_calibration_name=No
         return _profile
 
     def _diff_function(params_vector):
-        return diff_function(calibration_points, _to_profile(params_vector))
+        return diff_function(points, _to_profile(params_vector))
 
     vector = []
     for param in params:
@@ -92,5 +93,5 @@ def calculate_calibrations(approximation, iterations, output_calibration_name=No
 
 
 if __name__ == '__main__':
-    input = GamepadInput(RcTarget(), SimTarget(None))
-    input.startup()
+    tolerance = calculate_calibrations('broken', '2023-01-06 20-40-00', 500, 'calibrated')
+    print(f'calibration saved, tolerance {tolerance}')
