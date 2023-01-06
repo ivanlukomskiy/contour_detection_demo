@@ -4,10 +4,9 @@ import cv2
 import numpy as np
 
 from constants import VIEW_WIDTH, VIEW_HEIGHT, VIEW_SCALE, UPPER_ARM_LENGTH, ARM_THICKNESS, \
-    FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, MIN_DISTANCE, \
-    CONTOUR_COLOR, CONTOUR_THICKNESS
-from rc.calibration import load_profile
+    FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, CONTOUR_COLOR, CONTOUR_THICKNESS
 from rc.geometry import sheet_coords_to_angles
+from rc.yaml_io import load_profile
 
 X0 = int(VIEW_WIDTH / 2)
 Y0 = int(VIEW_HEIGHT / 6)
@@ -79,7 +78,9 @@ def add_text(img, x, y, z, shoulder_angle, elbow_angle):
     cv2.putText(img, f'Sh: {shoulder_angle:.1f}', (180, VIEW_HEIGHT - 80), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
     cv2.putText(img, f'El: {elbow_angle:.1f}', (180, VIEW_HEIGHT - 40), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
+
 ideal_calibration = load_profile('ideal')
+
 
 class SimTarget:
     def __init__(self, contours):

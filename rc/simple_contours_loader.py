@@ -48,7 +48,7 @@ def read_contours(filename):
 
 
 if __name__ == '__main__':
-    img = cv2.imread('gamepad.jpeg')
+    img = cv2.imread('../assets/gamepad.jpeg')
     img = fit_to_sheet(img)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY)

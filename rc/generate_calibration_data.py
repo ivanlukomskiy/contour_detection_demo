@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 from rc.calibration import load_profile, save_calibration_points
@@ -22,6 +24,8 @@ def generate():
     f = np.vectorize(to_angles, otypes=(float, float))
 
     a, b = f(x, y)
+    x += random.uniform(-5., 5.)
+    y += random.uniform(-5., 5.)
     return np.dstack((x, y, a, b))[0]
 
 
@@ -36,4 +40,4 @@ if __name__ == '__main__':
             'b': float(point[3]),
         })
     print(res)
-    save_calibration_points('ideal', res)
+    save_calibration_points('tolerance_10mm', res)

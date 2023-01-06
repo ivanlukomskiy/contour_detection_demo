@@ -15,7 +15,7 @@ if __name__ == '__main__':
     executor.execute(gcode)
 
     gcode = to_gcode(contours)
-    with open('plan.gcode', 'w') as f:
+    with open('../assets/plan.gcode', 'w') as f:
         for cmd in gcode:
             f.write(cmd.gcode_str + '\n')
 
