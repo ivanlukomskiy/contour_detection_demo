@@ -102,7 +102,7 @@ class SimTarget:
         if self.contours:
             draw_contours(img, self.contours)
         color = (0, int(255 * z), int(255 * (1 - z)))
-        add_calibration_points(img)
+        # add_calibration_points(img)
         draw_arm(img, shoulder_angle, elbow_angle, color)
         add_text(img, x, y, z, shoulder_angle, elbow_angle)
         cv2.imshow('simulation', img)
