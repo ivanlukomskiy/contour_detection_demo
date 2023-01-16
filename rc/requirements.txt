@@ -37,3 +37,5 @@ stack-data==0.6.2
 toml==0.10.2
 traitlets==5.7.0
 wcwidth==0.2.5
+numdifftools==0.9.41
+pyyaml==6.0

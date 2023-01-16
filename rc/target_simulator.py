@@ -4,9 +4,9 @@ import cv2
 import numpy as np
 
 from constants import VIEW_WIDTH, VIEW_HEIGHT, VIEW_SCALE, UPPER_ARM_LENGTH, ARM_THICKNESS, \
-    FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, MIN_DISTANCE, \
-    CONTOUR_COLOR, CONTOUR_THICKNESS
+    FOREARM_LENGTH, SHEET_DISTANCE, SHEET_WIDTH, SHEET_HEIGHT, SHEET_COLOR, CONTOUR_COLOR, CONTOUR_THICKNESS
 from rc.geometry import sheet_coords_to_angles
+from rc.yaml_io import load_profile
 
 X0 = int(VIEW_WIDTH / 2)
 Y0 = int(VIEW_HEIGHT / 6)
@@ -71,6 +71,13 @@ def draw_contours(img, contours):
         draw_contour(img, contour)
 
 
+def add_calibration_points(img):
+    for x in [0, 50, 100, 150, 200, 250]:
+        for y in [0, 50, 100, 150, 200]:
+            cv2.drawMarker(img, (int((x - SHEET_WIDTH / 2) * VIEW_SCALE + X0),
+                                 int(VIEW_HEIGHT - (y + SHEET_DISTANCE) * VIEW_SCALE - Y0)), (0, 255, 0))
+
+
 def add_text(img, x, y, z, shoulder_angle, elbow_angle):
     cv2.putText(img, f'X: {x:.1f}', (10, VIEW_HEIGHT - 120), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
     cv2.putText(img, f'Y: {y:.1f}', (10, VIEW_HEIGHT - 80), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
@@ -79,18 +86,23 @@ def add_text(img, x, y, z, shoulder_angle, elbow_angle):
     cv2.putText(img, f'El: {elbow_angle:.1f}', (180, VIEW_HEIGHT - 40), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
 
+ideal_calibration = load_profile('ideal')
+
+
 class SimTarget:
-    def __init__(self, contours):
+    def __init__(self, contours, profile=None):
         self.contours = contours
+        self.profile = profile or ideal_calibration
 
     def apply(self, x, y, z):
         img = np.zeros((VIEW_HEIGHT, VIEW_WIDTH, 3), np.uint8)
 
-        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y)
+        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y, self.profile)
         draw_sheet(img)
         if self.contours:
             draw_contours(img, self.contours)
         color = (0, int(255 * z), int(255 * (1 - z)))
+        # add_calibration_points(img)
         draw_arm(img, shoulder_angle, elbow_angle, color)
         add_text(img, x, y, z, shoulder_angle, elbow_angle)
         cv2.imshow('simulation', img)

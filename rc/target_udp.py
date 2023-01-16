@@ -10,11 +10,12 @@ SERVER_PORT = 5005
 
 
 class RcTarget:
-    def __init__(self):
+    def __init__(self, profile):
+        self.profile = profile
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def apply(self, x, y, z):
-        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y)
+        shoulder_angle, elbow_angle = sheet_coords_to_angles(x, y, self.profile)
         wrist_angle = z * (MAX_WRIST_ANGLE - MIN_WRIST_ANGLE) + MIN_WRIST_ANGLE
         # print(f'sending {shoulder_angle} {elbow_angle} {wrist_angle}')
         self.sock.sendto(struct.pack('ddd', shoulder_angle, elbow_angle, wrist_angle),
