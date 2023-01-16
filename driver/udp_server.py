@@ -2,10 +2,13 @@ import select
 import socket
 import struct
 import traceback
+from adafruit_servokit import ServoKit
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 5005
-
+kit = ServoKit(channels=16, address=0x41)
+shoulder_offset = 90
+elbow_offset = 0
 
 class UdpController:
     sock = None
@@ -23,6 +26,9 @@ class UdpController:
                     print("Angles received: {}, {}, {}".format(shoulder_angle, elbow_angle, wrist_angle))
 
                     # todo apply angles
+                    kit.servo[0].angle = 180-max(min(shoulder_angle+shoulder_offset, 180), 0)
+                    kit.servo[1].angle = max(min(elbow_angle+elbow_offset, 180), 0)
+                    kit.servo[2].angle = wrist_angle
                 except:
                     print("Failed to handle message", traceback.format_exc())
 
